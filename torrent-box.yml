@@ -1,0 +1,91 @@
+version: "3"
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    hostname: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 8085:8085 # qbittorrent
+      - 9117:9117 # Jackett
+      - 8989:8989 # Sonarr
+      - 9696:9696 # Prowlarr
+      - 7878:7878 # Radarr
+    volumes:
+      - /home/${USER}/docker/gluetun:/data/gluetun
+    environment:
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      - VPN_SERVICE_PROVIDER=airvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=
+      - WIREGUARD_ADDRESSES=
+      - WIREGUARD_PUBLIC_KEY=
+      - WIREGUARD_PRESHARED_KEY=
+      - WIREGUARD_ALLOWED_IPS=0.0.0.0/0,::/0
+      - WIREGUARD_MTU=
+      - WIREGUARD_ENDPOINT_PORT=
+      - TZ=Asia/Kolkata
+      - UPDATER_PERIOD=24h
+################################################
+  deluge:
+    image: lscr.io/linuxserver/deluge
+    container_name: deluge
+    network_mode: service:gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Calcutta
+      - WEBUI_PORT=8085
+    volumes:
+      - /home/${USER}/docker/deluge:/data/config
+      - /home/${USER}/downloads:/data/downloads
+    depends_on:
+      - gluetun
+    restart: always
+##################################################
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    network_mode: service:gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Calcutta
+    volumes:
+      - /home/${USER}/docker/sonarr/data:/data/config
+      - /mnt/nvme/shows:/data/shows
+      - /mnt/nvme/cartoons:/data/cartoons
+      - /mnt/nvme/anime:/data/anime
+      - /home/${USER}/downloads:/data/downloads
+    restart: unless-stopped
+###################################################
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    network_mode: service:gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Calcutta
+    volumes:
+      - /home/${USER}/docker/prowlarr/data:/data/config
+    restart: unless-stopped
+####################################################
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    network_mode: service:gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Calcutta
+    volumes:
+      - /home/${USER}/docker/radarr/data:/data/config
+      - /mnt/nvme/movies:/data/movies #optional
+      - /home/${USER}/downloads:/data/downloads #optional
+    restart: unless-stopped
