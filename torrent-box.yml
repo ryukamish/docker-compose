@@ -32,9 +32,9 @@ services:
       - TZ=Asia/Kolkata
       - UPDATER_PERIOD=24h
 ################################################
-  deluge:
-    image: lscr.io/linuxserver/deluge
-    container_name: deluge
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
     network_mode: service:gluetun
     environment:
       - PUID=1000
