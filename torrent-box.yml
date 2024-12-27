@@ -42,7 +42,7 @@ services:
       - TZ=Asia/Calcutta
       - WEBUI_PORT=8085
     volumes:
-      - /home/${USER}/docker/deluge:/data/config
+      - /home/${USER}/docker/qbittorrent:/data/config
       - /home/${USER}/downloads:/data/downloads
     depends_on:
       - gluetun
