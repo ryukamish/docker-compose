@@ -1,0 +1,27 @@
+---
+services:
+  emby:
+    image: lscr.io/linuxserver/emby:latest
+    container_name: emby
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Calcutta
+    volumes:
+      - /home/ryukamish/docker/emby/config:/config
+      - /mnt/nvme/shows:/data/tvshows
+      - /mnt/nvme/movies:/data/movies
+      - /mnt/nvme/anime:/data/anime
+      - /mnt/nvme/cartoons:/data/cartoons
+      - /mnt/nvme/music:/data/music
+      - /opt/vc/lib:/opt/vc/lib #optional
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+    devices:
+      - /dev/dri:/dev/dri #optional
+      - /dev/vchiq:/dev/vchiq #optional
+      - /dev/video10:/dev/video10 #optional
+      - /dev/video11:/dev/video11 #optional
+      - /dev/video12:/dev/video12 #optional
+    restart: unless-stopped
