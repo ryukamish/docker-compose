@@ -11,11 +11,11 @@ services:
     ports:
       - 6881:6881
       - 6881:6881/udp
-      - 8085:8085 # qbittorrent
-      - 9117:9117 # Jackett
+      - 8080:8080 # qbittorrent
       - 8989:8989 # Sonarr
       - 9696:9696 # Prowlarr
       - 7878:7878 # Radarr
+      - 6767:6767 # Bazarr
     volumes:
       - /home/${USER}/docker/gluetun:/data/gluetun
     environment:
@@ -40,7 +40,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Asia/Calcutta
-      - WEBUI_PORT=8085
+      - WEBUI_PORT=8080
     volumes:
       - /home/${USER}/docker/qbittorrent:/data/config
       - /home/${USER}/downloads:/data/downloads
@@ -88,4 +88,22 @@ services:
       - /home/${USER}/docker/radarr/data:/data/config
       - /mnt/nvme/movies:/data/movies #optional
       - /home/${USER}/downloads:/data/downloads #optional
+    restart: unless-stopped
+###########################################################
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    network_mode: service:gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Calcutta
+      #- NZBGET_USER=ryukamish #optional
+      #- NZBGET_PASS=Spotting0-Fraternal4-Primate5-Handsaw6-Unstitch1 #optional
+    volumes:
+      - /home/${USER}/docker/bazarr/config:/data/config
+      - /mnt/nvme/movies:/data/movies
+      - /mnt/nvme/anime:/data/anime
+      - /mnt/nvme/cartoons:/data/cartoons
+      - /mnt/nvme/shows:/data/shows
     restart: unless-stopped
